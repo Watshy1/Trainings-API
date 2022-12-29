@@ -1,6 +1,7 @@
 <?php
 
 require_once __DIR__ . '/../src/controller/ParticipantsController.php';
+require_once __DIR__ . '/../src/controller/FormationsController.php';
 
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
@@ -68,6 +69,18 @@ $app->get('/participants/{id}', function (Request $request, Response $response, 
     }
 
     $jsonResponse = json_encode(['status' => 200, 'data' => $participants]);
+
+    $response->getBody()->write($jsonResponse);
+
+    return $response->withHeader('Content-Type', 'application/json');
+});
+
+$app->get('/formations', function (Request $request, Response $response) {
+
+    $formationsController = new FormationsController();
+    $formations = $formationsController->getFormations();
+
+    $jsonResponse = json_encode(['status' => 200, 'data' => $formations]);
 
     $response->getBody()->write($jsonResponse);
 
