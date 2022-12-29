@@ -1,5 +1,7 @@
 <?php
 
+require_once __DIR__ . '/../src/controller/ParticipantsController.php';
+
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\Factory\AppFactory;
@@ -20,15 +22,56 @@ $app->get('/', function (Request $request, Response $response) {
     return $response;
 });
 
-$app->get('/trainings', function (Request $request, Response $response) {
-    $pdo = new PDO($_ENV['DB_TYPE'] . ':host=' . $_ENV['DB_HOST'] . ';port=' . $_ENV['DB_PORT'] . ';dbname=' . $_ENV['DB_NAME'] . ';user=' . $_ENV['DB_USER'] . ';password=' . $_ENV['DB_PASSWORD']);
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-    $pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+$app->post('/participants', function (Request $request, Response $response) {
 
-    $statement = $pdo->prepare('SELECT * FROM test');
-    $statement->execute();
+    if ($request->getHeaderLine('content-type') !== 'application/json') {
+        return $response->withStatus(415)->withHeader('Content-Type', 'application/json');
+    }
 
-    return $response->withJson($statement->fetchAll());
+    $data = $request->getParsedBody();
+
+    $participantsController = new ParticipantsController();
+    $participantsController->createParticipants($data['firstname'], $data['lastname'], $data['company'] ?? null);
+
+    $jsonResponse = json_encode(['status' => 200]);
+
+    $response->getBody()->write($jsonResponse);
+
+    return $response->withHeader('Content-Type', 'application/json');
+});
+
+$app->get('/participants', function (Request $request, Response $response) {
+
+    $participantsController = new ParticipantsController();
+    $participants = $participantsController->getParticipants();
+
+    $jsonResponse = json_encode(['status' => 200, 'data' => $participants]);
+
+    $response->getBody()->write($jsonResponse);
+
+    return $response->withHeader('Content-Type', 'application/json');
+});
+
+$app->get('/participants/{id}', function (Request $request, Response $response, $args) {
+
+    $id = $args['id'];
+
+    $participantsController = new ParticipantsController();
+    $participants = $participantsController->getOneParticipants($id);
+
+    if (!$participants) {
+        $jsonResponse = json_encode(['status' => 404, 'data' => $participants]);
+
+        $response->getBody()->write($jsonResponse);
+
+        return $response->withStatus(404);
+    }
+
+    $jsonResponse = json_encode(['status' => 200, 'data' => $participants]);
+
+    $response->getBody()->write($jsonResponse);
+
+    return $response->withHeader('Content-Type', 'application/json');
 });
 
 $app->run();
