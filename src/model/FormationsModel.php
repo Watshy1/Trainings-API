@@ -8,16 +8,14 @@ class FormationsModel
     public $endDate;
     public $maxParticipants;
     public $price;
-    public $participants;
 
-    public function __construct($name, $beginDate, $endDate, $maxParticipants, $price, $participants)
+    public function __construct($name, $beginDate, $endDate, $maxParticipants, $price)
     {
         $this->name = $name;
         $this->beginDate = $beginDate;
         $this->endDate = $endDate;
         $this->maxParticipants = $maxParticipants;
         $this->price = $price;
-        $this->participants = $participants;
     }
 
     public function create()
@@ -26,15 +24,14 @@ class FormationsModel
         $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         $pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
 
-        $statement = $pdo->prepare('INSERT INTO formations (name, beginDate, endDate, maxParticipants, price, participants) VALUES (:name, :beginDate, :endDate, :maxParticipants, :price, :participants)');
+        $statement = $pdo->prepare('INSERT INTO formations (name, begindate, enddate, maxparticipants, price) VALUES (:name, :begindate, :enddate, :maxparticipants, :price)');
         $statement->execute(
             [
                 'name' => $this->name,
-                'beginDate' => $this->beginDate,
-                'endDate' => $this->endDate,
-                'maxParticipants' => $this->maxParticipants,
-                'price' => $this->price,
-                'participants' => $this->participants
+                'begindate' => $this->beginDate,
+                'enddate' => $this->endDate,
+                'maxparticipants' => $this->maxParticipants,
+                'price' => $this->price
             ]
         );
     }

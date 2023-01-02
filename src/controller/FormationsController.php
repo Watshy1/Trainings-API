@@ -5,9 +5,9 @@ require_once __DIR__ . '/../model/FormationsModel.php';
 class FormationsController
 {
 
-    public function createFormations($name, $beginDate, $endDate, $maxParticipants, $price, $participants)
+    public function createFormations($name, $beginDate, $endDate, $maxParticipants, $price)
     {
-        $formations = new FormationsModel($name, $beginDate, $endDate, $maxParticipants, $price, $participants);
+        $formations = new FormationsModel($name, $beginDate, $endDate, $maxParticipants, $price);
         $formations->create();
     }
 

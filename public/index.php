@@ -75,6 +75,24 @@ $app->get('/participants/{id}', function (Request $request, Response $response, 
     return $response->withHeader('Content-Type', 'application/json');
 });
 
+$app->post('/formations', function (Request $request, Response $response) {
+
+    if ($request->getHeaderLine('content-type') !== 'application/json') {
+        return $response->withStatus(415)->withHeader('Content-Type', 'application/json');
+    }
+
+    $data = $request->getParsedBody();
+
+    $formationsController = new FormationsController();
+    $formationsController->createFormations($data['name'], $data['begindate'], $data['enddate'], $data['maxparticipants'], $data['price']);
+
+    $jsonResponse = json_encode(['status' => 200]);
+
+    $response->getBody()->write($jsonResponse);
+
+    return $response->withHeader('Content-Type', 'application/json');
+});
+
 $app->get('/formations', function (Request $request, Response $response) {
 
     $formationsController = new FormationsController();
